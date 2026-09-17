@@ -7,6 +7,16 @@
 -- Version du serveur : 10.4.28-MariaDB
 -- Version de PHP : 8.2.4
 
+-- --------------------------------------------------------
+--
+-- Note :
+--
+-- Malgré tous mes efforts, je n'ai pas réussi à installer 
+-- le driver PDO sur mon mac. J'ai préféré avancer sur le reste.
+-- Alors j'ai travaillé directement dans l'interface phpMyAdmin 
+-- pour la création des tables avec une connexion MySQL.
+-- --------------------------------------------------------
+
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 START TRANSACTION;
 SET time_zone = "+00:00";

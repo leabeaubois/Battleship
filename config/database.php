@@ -1,0 +1,4 @@
+<?php
+# Zone de connexion
+
+?>

@@ -1,2 +1,0 @@
-Malgré tous mes efforts, je n'ai pas réussi à installer le driver PDO sur mon mac. J'ai préféré avancer sur le reste.
-Alors j'ai travaillé directement dans l'interface phpMyAdmin pour la création des tables avec une connexion MySQL.

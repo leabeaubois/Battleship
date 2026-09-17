@@ -1,0 +1,71 @@
+:root{
+  --main :rgb(106, 255, 101);
+  --accent: red;
+  --boat: grey;
+}
+
+html{
+  background-color: rgb(1, 16, 34);
+  font-family: "IBM";
+  color: var(--main);
+}
+
+form{
+  input{
+    font-family: "IBM";
+    border: 2px solid var(--main);
+    background-color:  rgb(1, 16, 34);
+    color: var(--main);
+  }
+}
+
+table,  td {
+  border: 2px solid var(--main);
+  border-collapse: collapse;
+}
+table{
+  margin: auto;
+  th{
+    width: 20px;
+    height: 20px;
+  }
+  /* State : sea or boat */
+  td.boat::before{    
+    color: var(--boat);
+    content: '◉';
+    display: block;
+    text-align: center;
+  }
+  td.sea::before{
+      color: var(--main);
+      content: '◦';
+      display: block;
+      text-align: center;
+  }
+  /* Attacked : true or false */
+  td.sea.attacked::before{
+      content: '●';
+      color:white;
+      display: block;
+      text-align: center;
+  }
+  td.boat.attacked::before{
+      content: 'x';
+      color:var(--accent);
+      display: block;
+      text-align: center;
+  }
+  td{
+    width: 40px;
+    height: 40px;
+
+
+  
+    p{
+      width: fit-content;
+      height: fit-content;
+      text-align: center;
+      margin: 0;
+    }
+  }  
+}
