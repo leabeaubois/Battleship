@@ -1,6 +1,6 @@
 <?php
   // Ouverture de la session
-  // session_start();
+  session_start();
 
   // Afficher les erreurs
   //signaler tous les types de problèmes
@@ -26,6 +26,11 @@
     'gaming' => [
       'file' => 'pages/gaming.php',
       'title' => 'Gaming',
+      'roles' => ['user', 'admin'],
+    ],
+    'history' => [
+      'file' => 'pages/history.php',
+      'title' => 'History',
       'roles' => ['user', 'admin'],
     ],
 
@@ -64,8 +69,21 @@
   /**
    * Vérification des autorisations des rôles
    */
-    // Plus tard
-    //
+  $requiredRoles = $route['roles'] ?? null;
+  if ($requiredRoles !== null) {
+
+    if (!isset($_SESSION['user'])) {
+      header("Location: index.php?page=login");
+      exit;
+    }
+
+    if (!in_array($_SESSION['user']['role'], $requiredRoles)) {
+      $route = [
+        'file' => 'pages/errors/forbidden.php',
+        'title' => "403 forbidden"
+      ];
+    }
+  }
 
   $file = $route["file"];
   $title = $route["title"];

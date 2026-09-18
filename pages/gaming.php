@@ -1,14 +1,27 @@
 <?php
-/**
- * Récupérer les valeurs la table ``cell`` pour construire le plateau
- * */
-
-  $sql = "SELECT cell_id AS id, coord, isHitten, isSunk, hasBoat, boatName
+  /**
+   * Récupérer le $user_id via la session
+   */
+  if (isset($_SESSION['user'])){
+    $user_id = $_SESSION['user']['id'];
+  }
+  /**
+   * Récupérer les valeurs la table ``cell`` pour construire le plateau
+   * */
+  // ! Attention : filtrer pour afficher le board correspondant au user 
+  //  La requête devient une insertion qu'il faut préparer */
+  $request = "SELECT 
+              board_xid,
+              cell_id AS id, 
+              coord, isHitten, isSunk, hasBoat, boatName
           FROM cell
+          WHERE board_xid = ?
           ORDER BY id
           ";
+  $searchCells = $pdo->prepare($request);   
+  $searchCells->execute([$user_id]);
+  $cells = $searchCells->fetchAll();
 
-  $cells = $pdo->query($sql)->fetchAll();
 ?>
 
 <?php
@@ -74,21 +87,20 @@
     <div id="game-id"></div>
     <div id="radar"></div>
   </div>  
-  <div id="board">
-    <?php 
-      echo createBoard($cells);
-    ?>
+
+  <div id="middle">
+    <div id="board">
+      <?php 
+        echo createBoard($cells);
+      ?>
+    </div>
+
+  <?php require 'command.php';?>
+
   </div>
+
   <div id="right">
-    <div id="history"></div>
+    <div id="strike-history"></div>
     <div id="boat-stats"></div>
-  </div>
-  <div id="command-pannel">
-    <!-- Formulaire de lancement des missiles -->
-    <form action="" method="POST">
-      <p>Verrouillage du missile, coordonnées : <input type="text" name="letterCommand"><input type="number" name="numberCommand"></p>
-      <input type="submit" name="submit" value="Submit">
-    </form>
-    <div id="logs"></div>
   </div>
 </main>

@@ -1,6 +1,6 @@
 <?php
   // ** Zone de connexion
-  echo "...database connexion..."; 
+  echo "<div class='data'>...database connexion..."; 
 
   /** 
    * Paramètres de connexion Data Source Name (dsn)
@@ -27,7 +27,7 @@
   */  
   try{
     $pdo = new PDO($dsn, $user, $pass, $options);
-    echo "...connected !";
+    echo "...connected !</div>";
   }catch(PDOException $e){
     die('...error : ' . $e->getMessage());
   }

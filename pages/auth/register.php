@@ -68,7 +68,7 @@
           'role' => 'user'
         ] ;     
 
-        header("Location: index.php");
+        header("Location: index.php?page=gaming");
         exit();
 
       } catch (PDOException $e) {
@@ -89,7 +89,7 @@
 
   <div>
     <label for="pseudo">Pseudo : *</label>
-    <input type="text" name="pseudo" id="pseudo" value="<?= $values['pseudo'] ?>">
+    <input type="text" name="pseudo" id="pseudo" minlength="5" maxlength="50" value="<?= $values['pseudo'] ?>">
     <?php if(isset($errors['pseudo'])) : ?>
       <span class="error"><?= $errors['pseudo'] ?></span>
     <?php endif ?>
