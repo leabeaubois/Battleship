@@ -56,19 +56,21 @@
           if($u % 10 == 0){
             $tableRow = "<th>" . $LETTERS[intdiv($u, 10)] . "</th>";
           }
-            $typeCell = $cell['hasBoat'];
-            if($typeCell){
+
+            /** Ajout des classes */
+            $typeCell = "sea";
+            $isHittenCell = "";
+            $boatCell = $cell['boatName'] ? $cell['boatName'] : "";
+            
+            if($cell['hasBoat']){
               $typeCell = "boat";
             }
             
-            $stateCell = $cell['isHitten'];
-            if($typeCell){
+            if($cell['isHitten']){
               $isHittenCell = "hitten";
             }
-
-            $boatCell = $cell['boatName'];
           
-          $tableRow .= "<td class='". $typeCell . " " . $stateCell . " " . $boatCell . "'></td>";
+          $tableRow .= "<td class='". $typeCell . " " . $isHittenCell . " " . $boatCell . "'></td>";
           $u++;
 
           if($u % 10 == 0){
@@ -84,7 +86,14 @@
 
 <main>
   <div id="left">
-    <div id="game-id"></div>
+    <div id="game-id">
+    <?= $_SESSION['user']['pseudo'] ?>
+      <p>Score : 00000</p>
+      <?php
+          date_default_timezone_set('Europe/Paris');?>
+         <p> <?= "Fuseau horaire 'Europe/Paris'";?></p>
+         <p><?= date('Y-m-d H:i:s'); ?></p>
+    </div>
     <div id="radar"></div>
   </div>  
 
@@ -100,7 +109,11 @@
   </div>
 
   <div id="right">
-    <div id="strike-history"></div>
-    <div id="boat-stats"></div>
+    <div id="strike-history">
+      <!-- Stocker toutes les commandes envoyées dans un tableau et les afficher ici -->
+    </div>
+    <div id="boat-stats">
+      <!-- Requête pour afficher une liste des bateau et leur niveau de vie -->
+    </div>
   </div>
 </main>

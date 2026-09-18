@@ -143,14 +143,14 @@ table {
   }
 
   /* Attacked : true or false */
-  td.sea.attacked::before {
+  td.sea.hitten::before {
     content: '●';
     color: white;
     display: block;
     text-align: center;
   }
 
-  td.boat.attacked::before {
+  td.boat.hitten::before {
     content: 'x';
     color: var(--accent);
     display: block;

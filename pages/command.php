@@ -12,10 +12,10 @@
   //      - sinon la case est vide -> coup dans l'eau -> isHitten devient ``true``
 
   $values = [
-    'coord' => '',
-    'isHitten' => '',
-    'hasBoat' => '',
-    'isSunk' => '',
+    'command-coord' => '',
+    'isHitten' => false,
+    'hasBoat' => false,
+    'isSunk' => false,
   ];
 
   /** 
@@ -37,7 +37,7 @@
   $messages = [
     'alreadyHitten' => '',
     'isHitten' => '',
-    'isEmpty' => '',
+    'hasBoat' => '',
     'isSunk' => '',
   ];
 
@@ -47,19 +47,94 @@
   if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     // Mapping de données : pas besoin car une seule donnée à récupérer via le POST
     $values['coord-command'] = trim($_POST['coord-command']) ?? '';
+
+    /**
+     * Validation des coordonnées envoyées
+     */
+    $pattern = "/[A-J]+[0-9]+/i";
+    if ($values['coord-command'] === '') {
+      $errors["coord-command"] = "Coordonnées vides…";
+    } else if (strlen($values['coord-command']) > 2 || strlen($values['coord-command']) < 2) {
+      $errors["coord-command"] = "Format type 'A0' est attendu…";
+    } elseif (!preg_match($pattern, $values['coord-command'])){
+      $errors["coord-command"] = "Les coordonnées sont au format : 'J9' (une lettre entre A et J + un chiffre entre 0 et 9.)";
+    }
+  
+  
+    /**
+     * Requête de la cellule ciblée
+     * 
+     * 
+    */
+    if (!$errors) {
+      echo "Zone localisée, lancement en : ";
+      echo $values['coord-command'];
+      try {
+        /** Va chercher la cellule et compare */
+        $coord = $values['coord-command'];
+        $sql = "SELECT
+                board_xid,
+                coord, isHitten, isSunk, hasBoat
+                FROM cell
+                WHERE board_xid = ? AND coord = ?
+                ";
+        $request = $pdo->prepare($sql);
+        $request->execute([$user_id, $coord]);
+        $targetedCell = $request->fetch();
+  
+        echo "</br>…Etat de la cellule visée : ";
+        print_r($targetedCell);
+        
+  
+      
+        if($targetedCell['hasBoat'] && $targetedCell['isHitten']){
+          $values['isHitten'] = true; // reste true ou juste ne pas modifier ?
+          $message['alreadyHitten'] = 'Bateau déjà touché';
+          echo $message['alreadyHitten'];
+        }
+        else if($targetedCell['hasBoat']){
+          $values['isHitten'] = true;
+          $message['alreadyHitten'] = 'Touché !';
+          echo $message['alreadyHitten'];
+          echo $values['isHitten'];
+        }else{
+          $values['hasBoat'] = false;
+          $values['isHitten'] = true;
+          $message['hasBoat'] = 'Il n\'y a rien ici.';
+          echo $message['hasBoat'];
+        }
+
+        /** Convertir en boolen */
+        $isHitten = filter_var($values['isHitten'], FILTER_VALIDATE_BOOLEAN) ? 1 : 0;
+        $isSunk   = filter_var($values['isSunk'], FILTER_VALIDATE_BOOLEAN) ? 1 : 0;
+  
+        /**
+         * Requête de modification de la cellule visée
+         */
+        $sql = "
+        UPDATE cell
+        SET
+            isHitten = ?, 
+            isSunk = ?
+        WHERE board_xid = ? AND coord = ?
+        ";
+  
+        $missile = $pdo->prepare($sql);
+        $missile->execute([
+          $isHitten,
+          $isSunk,
+            $user_id,
+            $coord
+        ]);
+  
+        // ne pas changer de page ?
+        header('Location: index.php?page=gaming');
+      } catch (PDOException $e) {
+        $errors["global"] = "Erreur au lancement du missile.";
+      }
+    }
   }
 
-  /**
-   * Validation des coordonnées envoyées
-   */
-  $pattern = "/[A-J]+[0-9]+/i";
-  if ($values['coord-command'] === '') {
-    $errors["coord-command"] = "Coordonnées vides…";
-  } else if (strlen($values['coord-command']) > 2 || strlen($values['coord-command']) < 2) {
-    $errors["coord-command"] = "Format type 'A0' est attendu…";
-  } elseif (!preg_match($pattern, $values['coord-command'])){
-    $errors["coord-command"] = "Les coordonnées sont au format : 'J9' (une lettre entre A et J + un chiffre entre 0 et 9.)";
-  }
 
 ?>
 
@@ -82,5 +157,11 @@
       <span class="error"><?= $errors['coord-command'] ?></span>
     <?php endif ?>
   </form>
-  <div id="logs"></div>
+  <div id="logs">
+    <?php if (isset($messages)) : ?>
+      <?php foreach($messages as $message):?>
+        <span><?=$message?></span>
+      <?php endforeach ?>
+    <?php endif ?>
+  </div>
 </div>
