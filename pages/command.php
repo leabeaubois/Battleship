@@ -67,8 +67,8 @@
      * 
     */
     if (!$errors) {
-      echo "Zone localisée, lancement en : ";
-      echo $values['coord-command'];
+      // echo "Zone localisée, lancement en : ";
+      // echo $values['coord-command'];
       try {
         /** Va chercher la cellule et compare */
         $coord = $values['coord-command'];
@@ -79,29 +79,30 @@
                 WHERE board_xid = ? AND coord = ?
                 ";
         $request = $pdo->prepare($sql);
+        // $user_id est définit dans gaming.php
         $request->execute([$user_id, $coord]);
         $targetedCell = $request->fetch();
   
-        echo "</br>…Etat de la cellule visée : ";
-        print_r($targetedCell);
+        // echo "</br>…Etat de la cellule visée : ";
+        // print_r($targetedCell);
         
   
       
         if($targetedCell['hasBoat'] && $targetedCell['isHitten']){
           $values['isHitten'] = true; // reste true ou juste ne pas modifier ?
           $message['alreadyHitten'] = 'Bateau déjà touché';
-          echo $message['alreadyHitten'];
+          // echo $message['alreadyHitten'];
         }
         else if($targetedCell['hasBoat']){
           $values['isHitten'] = true;
           $message['alreadyHitten'] = 'Touché !';
-          echo $message['alreadyHitten'];
-          echo $values['isHitten'];
+          // echo $message['alreadyHitten'];
+          // echo $values['isHitten'];
         }else{
           $values['hasBoat'] = false;
           $values['isHitten'] = true;
           $message['hasBoat'] = 'Il n\'y a rien ici.';
-          echo $message['hasBoat'];
+          // echo $message['hasBoat'];
         }
 
         /** Convertir en boolen */

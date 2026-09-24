@@ -33,6 +33,11 @@
       'title' => 'History',
       'roles' => ['user', 'admin'],
     ],
+    'create-game' => [
+      'file' => 'pages/create-game.php',
+      'title' => 'Game Board Creation',
+      'roles' => ['user', 'admin'],
+    ],
 
     /**
      * Gestion de l'authentification

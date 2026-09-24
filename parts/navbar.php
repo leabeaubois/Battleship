@@ -8,7 +8,7 @@
         Plateau de jeu
           <ul>
             <li><a href="index.php?page=gaming">Partie en cours</a></li>
-            <li><a href="index.php?page=new-game">Lancer une nouvelle partie</a></li>
+            <li><a href="index.php?page=create-game">Lancer une nouvelle partie</a></li>
           </ul>
       </li>
       <li>
