@@ -91,9 +91,9 @@
     <?= $_SESSION['user']['pseudo'] ?>
       <p>Score : 00000</p>
       <?php
-          date_default_timezone_set('Europe/Paris');?>
-         <p> <?= "Fuseau horaire 'Europe/Paris'";?></p>
-         <p><?= date('Y-m-d H:i:s'); ?></p>
+        date_default_timezone_set('Europe/Paris');?>
+        <p> <?= "Fuseau horaire 'Europe/Paris'";?></p>
+        <p><?= date('Y-m-d H:i:s'); ?></p>
     </div>
     <div id="radar"></div>
   </div>  
