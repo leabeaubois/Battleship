@@ -10,6 +10,8 @@ Avec un espace de connexion par joueur
  
 Je me concentre d'abord sur cette partie, pas sur l’algorithme du jeu.
 
+---
+
 ## Les étapes
 ### Ėtape 1
 - [x] Concevoir la DB (MLD) 
@@ -23,21 +25,21 @@ Je me concentre d'abord sur cette partie, pas sur l’algorithme du jeu.
 
 ### Étape 3
 - [x] Cohérence et nettoyage des tables
-- [x] Rajout de ´´strike_history´´ dans la table board et suppression de la table ´´strike´´
+- [x] Rajout de ``strike_history`` dans la table board et suppression de la table ``strike``
 - [x] Corriger les commandes SQL et séparer les fichiers des requêtes d'insertion des jeux de données test
 - [x] Modifier password dans la table user par mot_de_passe
-- [x] Rajouter la colonne ´´role´´ dans la table ´´user´´
+- [x] Rajouter la colonne ``role`` dans la table ``user``
 
 ### étape 4
-- [x] Construction du tableau des cellules (version brouillon)
+- [x] Construction du tableau des cellules (~~version brouillon~~)
 - [x] Relancer une partie
 - [ ] Placement des bateaux
-
 
 ### étape 5
 - [ ] La création d'un compte utilisateur doit génèrer automatiquement la création d'une partie (game) et d'un plateau (board)
 - [ ] Répartitions des blocs en class
 
+---
 
 ## Pour aller plus loin :
 * Des sessions pour deux joueur•euses
