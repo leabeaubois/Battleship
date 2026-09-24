@@ -3,15 +3,15 @@
 /*                  Initialisation du tableaux des cellules                  */
 /* -------------------------------------------------------------------------- */
 
-$board_id = $_SESSION['user']['id'];
+$game_id = $_SESSION['user']['id'];
 // Pas de validation $_POST car tout est crée côté serveur
 // Pas besoin de remplir l'id: il sera auto-généré en BDD
-// Board-xid sera récupérer avec le user id depuis la session
+//game-xid sera récupérer avec le user id depuis la session
 // isSunk et isHitten seront initialisés à ´´false´´
 $CELLS = [];
 $cell = [
   'id' => null,
-  'board_xid' => $board_id,
+  'game_xid' => $game_id,
   'coord' => '',
   'isHitten' => false,
   'isSunk' => false,
@@ -69,26 +69,26 @@ $cell = [
 /* -------------------------------------------------------------------------- */
 // ! - Attention, cell_id 
 try{
-  // On vérifie qu'il n'y pas d'autres cellules qui ont le board_xid
+  // On vérifie qu'il n'y pas d'autres cellules qui ont le game_xid
   // Si c'est le cas, on les supprime
   $verify = "
             DELETE FROM  `cell` 
-            WHERE board_xid = ?;
+            WHERE game_xid = ?;
             ";
   $clean = $pdo->prepare($verify);
-  $clean->execute([$board_id]);
+  $clean->execute([$game_id]);
 
   // Puis on envoit la requête pour chaque cellule
   foreach($CELLS as $cell){
     // print_r($cell);
     $sql = "INSERT INTO cell 
-                    (cell_id, board_xid, coord, isHitten, isSunk, hasBoat, boatName)
+                    (cell_id, game_xid, coord, isHitten, isSunk, hasBoat, boatName)
             VALUES (?,?,?,?,?,?,?)
               ";
     $statement = $pdo->prepare($sql);
     $statement->execute([
         $cell['id'],
-        $cell['board_xid'],
+        $cell['game_xid'],
         strval($cell['coord']),
         $cell['isHitten'],
         $cell['isSunk'],

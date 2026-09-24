@@ -21,7 +21,7 @@ Je me concentre d'abord sur cette partie, pas sur l’algorithme du jeu.
 
 ### Étape 2
 - [x] Concevoir et créer l'architecture du site
-- [x] Créer les parts et les routes
+- [x] Créer les /parts et les routes
 
 ### Étape 3
 - [x] Cohérence et nettoyage des tables
@@ -38,6 +38,16 @@ Je me concentre d'abord sur cette partie, pas sur l’algorithme du jeu.
 ### étape 5
 - [ ] La création d'un compte utilisateur doit génèrer automatiquement la création d'une partie (game) et d'un plateau (board)
 - [ ] Répartitions des blocs en class
+
+---
+
+## Notes diverses :
+* **Réfléchir au fonctionnement du score :**
+Nombre minimal de tirs de missiles pour détruire tous les bâteaux.
+> 17 cases occupées par des bateaux / 100 cases.
+*Ce score se cumule avec toutes les parties.*
+
+* Optimiser la table ``cell``
 
 ---
 

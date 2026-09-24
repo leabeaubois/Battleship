@@ -73,10 +73,10 @@
         /** Va chercher la cellule et compare */
         $coord = $values['coord-command'];
         $sql = "SELECT
-                board_xid,
+                game_xid,
                 coord, isHitten, isSunk, hasBoat
                 FROM cell
-                WHERE board_xid = ? AND coord = ?
+                WHERE game_xid = ? AND coord = ?
                 ";
         $request = $pdo->prepare($sql);
         // $user_id est définit dans gaming.php
@@ -117,7 +117,7 @@
         SET
             isHitten = ?, 
             isSunk = ?
-        WHERE board_xid = ? AND coord = ?
+        WHERE game_xid = ? AND coord = ?
         ";
   
         $missile = $pdo->prepare($sql);

@@ -9,14 +9,14 @@
   /**
    * Récupérer les valeurs la table ``cell`` pour construire le plateau
    * */
-  // ! Attention : filtrer pour afficher le board correspondant au user 
+  // ! Attention : filtrer pour afficher le game correspondant au user 
   //  La requête devient une insertion qu'il faut préparer */
   $request = "SELECT 
-              board_xid,
+              game_xid,
               cell_id AS id, 
               coord, isHitten, isSunk, hasBoat, boatName
           FROM cell
-          WHERE board_xid = ?
+          WHERE game_xid = ?
           ORDER BY id
           ";
   $searchCells = $pdo->prepare($request);   
