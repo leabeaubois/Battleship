@@ -38,10 +38,6 @@
       'title' => 'History',
       'roles' => ['user', 'admin'],
     ],
-    'create-game' => [
-      'file' => 'pages/create-game.php',
-      'roles' => ['user', 'admin'],
-    ],
 
     /**
      * Gestion de l'authentification
