@@ -8,14 +8,7 @@
         Plateau de jeu
           <ul>
             <li><a href="index.php?page=gaming">Partie en cours</a></li>
-            <li>
-              <form 
-                  method="post"
-                  action="index.php?page=new-game"
-                  onsubmit="return confirm('Voulez-vous supprimer la partie en cours ?')">
-                  <button>Lancer une nouvelle partie</button>
-              </form>
-            </li>
+            <li><a href="index.php?page=create-game">Lancer une nouvelle partie</a></li>
           </ul>
       </li>
       <li>

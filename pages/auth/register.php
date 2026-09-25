@@ -68,6 +68,14 @@
           'role' => 'user'
         ] ;     
 
+        $lastCreatedId = $pdo->lastInsertId();
+
+        $sql = "INSERT INTO
+                game (game_id, user_xid)
+                VALUES (?, ?)";
+        $statement = $pdo->prepare($sql);
+        $statement->execute([$lastCreatedId, $lastCreatedId]);        
+
         header("Location: index.php?page=gaming");
         exit();
 

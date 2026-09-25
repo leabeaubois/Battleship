@@ -1,0 +1,10 @@
+notes Battleship :
+
+
+24-09-2026 9:38
+itf3 -> nouvelle branche
+- rajout de strike_history dans la table board
+- modifier la BDD et réécrire les commandes SQL
+- séparer les fichiers des requêtes SQL pour insérer les données test
+
+

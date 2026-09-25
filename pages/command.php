@@ -67,44 +67,43 @@
      * 
     */
     if (!$errors) {
-      echo "Zone localisée, lancement en : ";
-      echo $values['coord-command'];
+      // echo "Zone localisée, lancement en : ";
+      // echo $values['coord-command'];
       try {
         /** Va chercher la cellule et compare */
         $coord = $values['coord-command'];
         $sql = "SELECT
-                board_xid,
+                game_xid,
                 coord, isHitten, isSunk, hasBoat
                 FROM cell
-                WHERE board_xid = ? AND coord = ?
+                WHERE game_xid = ? AND coord = ?
                 ";
         $request = $pdo->prepare($sql);
+        // $user_id est définit dans gaming.php
         $request->execute([$user_id, $coord]);
         $targetedCell = $request->fetch();
   
-        echo "</br>…Etat de la cellule visée : ";
-        print_r($targetedCell);
+        // echo "</br>…Etat de la cellule visée : ";
+        // print_r($targetedCell);
         $result = "";
   
       
         if($targetedCell['hasBoat'] && $targetedCell['isHitten']){
           $values['isHitten'] = true; // reste true ou juste ne pas modifier ?
           $message['alreadyHitten'] = 'Bateau déjà touché';
-          $result = "déjà touché";
-          echo $message['alreadyHitten'];
+          // echo $message['alreadyHitten'];
         }
         else if($targetedCell['hasBoat']){
           $values['isHitten'] = true;
           $message['alreadyHitten'] = 'Touché !';
-          echo $message['alreadyHitten'];
-          echo $values['isHitten'];
+          // echo $message['alreadyHitten'];
+          // echo $values['isHitten'];
           $result = "touché";
         }else{
           $values['hasBoat'] = false;
           $values['isHitten'] = true;
           $message['hasBoat'] = 'Il n\'y a rien ici.';
           echo $message['hasBoat'];
-          $result = "dans l'eau";
         }
 
         /** Convertir en boolen */
@@ -119,7 +118,7 @@
         SET
             isHitten = ?, 
             isSunk = ?
-        WHERE board_xid = ? AND coord = ?
+        WHERE game_xid = ? AND coord = ?
         ";
   
         $missile = $pdo->prepare($sql);
