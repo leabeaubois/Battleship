@@ -84,12 +84,13 @@
   
         echo "</br>…Etat de la cellule visée : ";
         print_r($targetedCell);
-        
+        $result = "";
   
       
         if($targetedCell['hasBoat'] && $targetedCell['isHitten']){
           $values['isHitten'] = true; // reste true ou juste ne pas modifier ?
           $message['alreadyHitten'] = 'Bateau déjà touché';
+          $result = "déjà touché";
           echo $message['alreadyHitten'];
         }
         else if($targetedCell['hasBoat']){
@@ -97,11 +98,13 @@
           $message['alreadyHitten'] = 'Touché !';
           echo $message['alreadyHitten'];
           echo $values['isHitten'];
+          $result = "touché";
         }else{
           $values['hasBoat'] = false;
           $values['isHitten'] = true;
           $message['hasBoat'] = 'Il n\'y a rien ici.';
           echo $message['hasBoat'];
+          $result = "dans l'eau";
         }
 
         /** Convertir en boolen */
@@ -125,6 +128,32 @@
           $isSunk,
             $user_id,
             $coord
+        ]);
+
+
+        // ** Rajouter les actions dans l'historique
+        $strikeShot = '[' . $coord . ',' . $result . ']';
+
+        /**
+         * Requête d'adaptation de l'historique
+         * Documentation json_array_append
+         * https://mariadb.com/docs/server/reference/sql-functions/special-functions/json-functions/json_array_append
+         * La table strike est inutile -> à supprimer.
+         */
+        $sql = "
+        UPDATE board
+        SET 
+            strike_history = JSON_ARRAY_APPEND
+                          (strike_history,
+                          '$',
+                          ? )
+        WHERE board_id = ?
+        ";
+
+        $missile = $pdo->prepare($sql);
+        $missile->execute([
+          $strikeShot,
+          $user_id,
         ]);
   
         // ne pas changer de page ?

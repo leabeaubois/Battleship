@@ -28,6 +28,11 @@
       'title' => 'Gaming',
       'roles' => ['user', 'admin'],
     ],
+    'new-game' => [
+      'file' => 'pages/new-game.php',
+      'title' => 'New Game',
+      'roles' => ['user', 'admin'],
+    ],
     'history' => [
       'file' => 'pages/history.php',
       'title' => 'History',
