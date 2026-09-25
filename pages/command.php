@@ -1,15 +1,16 @@
 <?php 
 
-  // ** Est-ce qu'on a besoin de refaire la requête ? 
-  /** Initialisation du tableaux de valuers qu'on va remplir via le POST */
-  // 1 - Attention à la validation des coordonnées côté serveur
-  // 2 - Ensuite on va cherche dans le colonne coord celle qui correspond à la valeur posté
-  // 3 - Logique :
-  //      - vérifier que la coordonnées existe sinon erreur
-  //      - si la case est isHitten = ``true`` -> déjà touché -> isHitten reste ``true``
-  //.     - si la case isBoat true : et isHitten = ``false`` -> touché ->  isHitten devient ``true`` + boatLife perd 1.
-  //          et si bateau life = 0 -> coulé -> isSunk devient ``true``
-  //      - sinon la case est vide -> coup dans l'eau -> isHitten devient ``true``
+ /* -------------------------------------------------------------------------- */
+ /*     Initialisation du tableaux de valeers qu'on va remplir via le POST     */
+ /* -------------------------------------------------------------------------- */
+  # 1 - Attention à la validation des coordonnées côté serveur
+  # 2 - Ensuite on va cherche dans le colonne coord celle qui correspond à la valeur posté
+  # 3 - Logique :
+    //      - vérifier que la coordonnées existe sinon erreur
+    //      - si la case est isHitten = ``true`` -> déjà touché -> isHitten reste ``true``
+    //.     - si la case isBoat true : et isHitten = ``false`` -> touché ->  isHitten devient ``true`` + boatLife perd 1.
+    //          et si bateau life = 0 -> coulé -> isSunk devient ``true``
+    //      - sinon la case est vide -> coup dans l'eau -> isHitten devient ``true``
 
   $values = [
     'command-coord' => '',
@@ -41,9 +42,11 @@
     'isSunk' => '',
   ];
 
-  /**
-   *  Gestion du formulaire
-   */
+
+  /* -------------------------------------------------------------------------- */
+  /*                            Gestion du formulaire                           */
+  /* -------------------------------------------------------------------------- */
+
   if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     // Mapping de données : pas besoin car une seule donnée à récupérer via le POST
     $values['coord-command'] = trim($_POST['coord-command']) ?? '';
@@ -61,14 +64,12 @@
     }
   
   
-    /**
-     * Requête de la cellule ciblée
-     * 
-     * 
-    */
+
+/* -------------------------------------------------------------------------- */
+/*                        Requête de la cellule ciblée                        */
+/* -------------------------------------------------------------------------- */
+  
     if (!$errors) {
-      // echo "Zone localisée, lancement en : ";
-      // echo $values['coord-command'];
       try {
         /** Va chercher la cellule et compare */
         $coord = $values['coord-command'];
@@ -82,28 +83,25 @@
         // $user_id est définit dans gaming.php
         $request->execute([$user_id, $coord]);
         $targetedCell = $request->fetch();
-  
-        // echo "</br>…Etat de la cellule visée : ";
-        // print_r($targetedCell);
         $result = "";
-  
+
       
         if($targetedCell['hasBoat'] && $targetedCell['isHitten']){
           $values['isHitten'] = true; // reste true ou juste ne pas modifier ?
           $message['alreadyHitten'] = 'Bateau déjà touché';
-          // echo $message['alreadyHitten'];
+          $result = "cible déjà touché";
         }
         else if($targetedCell['hasBoat']){
           $values['isHitten'] = true;
+          $values['boatLife']--;
           $message['alreadyHitten'] = 'Touché !';
-          // echo $message['alreadyHitten'];
-          // echo $values['isHitten'];
-          $result = "touché";
+          $result = "cible touché";
+
         }else{
           $values['hasBoat'] = false;
           $values['isHitten'] = true;
           $message['hasBoat'] = 'Il n\'y a rien ici.';
-          echo $message['hasBoat'];
+          $result = "cible raté";
         }
 
         /** Convertir en boolen */
@@ -130,23 +128,21 @@
         ]);
 
 
-        // ** Rajouter les actions dans l'historique
-        $strikeShot = '[' . $coord . ',' . $result . ']';
+        /* ----------------- Rajouter les actions dans l'historique ----------------- */
+        $strikeShot =  $coord . ' : ' . $result ;
 
         /**
          * Requête d'adaptation de l'historique
          * Documentation json_array_append
          * https://mariadb.com/docs/server/reference/sql-functions/special-functions/json-functions/json_array_append
-         * La table strike est inutile -> à supprimer.
          */
         $sql = "
-        UPDATE board
+        UPDATE game
         SET 
             strike_history = JSON_ARRAY_APPEND
-                          (strike_history,
-                          '$',
+                          (strike_history, '$',
                           ? )
-        WHERE board_id = ?
+        WHERE game_id = ?
         ";
 
         $missile = $pdo->prepare($sql);
@@ -154,16 +150,13 @@
           $strikeShot,
           $user_id,
         ]);
-  
-        // ne pas changer de page ?
+
         header('Location: index.php?page=gaming');
       } catch (PDOException $e) {
         $errors["global"] = "Erreur au lancement du missile.";
       }
     }
   }
-
-
 ?>
 
 <div id="command-pannel">

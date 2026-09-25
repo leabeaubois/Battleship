@@ -28,8 +28,8 @@
       'title' => 'Gaming',
       'roles' => ['user', 'admin'],
     ],
-    'new-game' => [
-      'file' => 'pages/new-game.php',
+    'create-game' => [
+      'file' => 'pages/create-game.php',
       'title' => 'New Game',
       'roles' => ['user', 'admin'],
     ],
@@ -97,10 +97,13 @@
   /**
    * Inclusion
    */
+  /** ob_start/end_flsuh : fonctions tampons permettent de réaliser des outputs avant l'affichage du header */
+  ob_start();
   require_once 'config/database.php';
   require_once 'parts/header.php';
   require_once $file;
   require_once 'parts/footer.php';
+  ob_end_flush();
 
 
 ?>
