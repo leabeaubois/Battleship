@@ -83,8 +83,15 @@
             
             if($cell['hasBoat']){
               $typeCell = "boat";
+
+              if($cell['isSunk']){
+                $typeCell .= "sunk";
+              }
             }
             
+            
+            
+
             if($cell['isHitten']){
               $isHittenCell = "hitten";
             }
@@ -113,7 +120,9 @@
         <p> <?= "Fuseau horaire 'Europe/Paris'";?></p>
         <p><?= date('Y-m-d H:i:s'); ?></p>
     </div>
-    <div id="radar"></div>
+    <div id="radar">
+    <!-- Un exemple de radar en pur CSS qui pourrait être implanté https://codepen.io/thebabydino/pen/AqbWeE -->
+    </div>
   </div>  
 
   <div id="middle">
@@ -129,15 +138,24 @@
 
   <div id="right">
     <div id="strike-history">
-      <!-- Stocker toutes les commandes envoyées dans un tableau et les afficher ici -->
+      <!-- Stocker toutes les commandes envoyées dans un format json et les afficher ici
+      
+      Traitement des données reçu en json :
+      https://www.php.net/manual/fr/function.json-decode.php
+      https://developer.mozilla.org/fr/docs/Learn_web_development/Core/Scripting/JSON
+
+      -->
+      <p>Journal de bord</p>
       <?php  
-        $strikes = explode(", ", $strikeHistory['strike_history']);?>
+        $strikes = json_decode($strikeHistory['strike_history']);
+        ?>
       <?php foreach($strikes as $strike): ?>
         <li><?= $strike ?></li>
       <?php endforeach?>
     </div>
     <div id="boat-stats">
       <!-- Requête pour afficher une liste des bateau et leur niveau de vie -->
+      <p>Cibles</p>
       <?php   foreach($boats as $boat):        ?>  
         <li><?=  $boat['boatName'] ?> 
             <?php $life =  $boat['boatLife'];

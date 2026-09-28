@@ -19,6 +19,7 @@
     'isSunk' => false,
     'boatName' => '',
     'boatLife' => 0,
+    'boatCoordinates' => '',
   ];
 
   /** 
@@ -32,17 +33,9 @@
 
 
   /** 
-   * Initialisation du tableaux des messages
-   * -> Résultat du tir
+   * Initialisation des messages à afficher
    */
-
-  // Déjà visé / Touché / Vide / Coulé 
-  $messages = [
-    'alreadyHitten' => '',
-    'isHitten' => '',
-    'hasBoat' => '',
-    'isSunk' => '',
-  ];
+  $result = '';
 
 
   /* -------------------------------------------------------------------------- */
@@ -86,7 +79,6 @@
         // $user_id est définit dans gaming.php
         $request->execute([$user_id, $coord]);
         $targetedCell = $request->fetch();
-        $result = "";
 
 
 
@@ -106,21 +98,23 @@
         }
 
         foreach($boats as $boat){
-          # Il y a un bateau 
+          # SI il y a un bateau 
           if(str_contains($boat['coord'], $coord) ){
-            $life = $boat['boatLife'];
+            
 
             # La cellule visée a déjà été touchée
             if($targetedCell['isHitten']){
-              $message['alreadyHitten'] = 'Bateau déjà touché';
-              $result = "cible déjà touché" .  $gameLife;
+              $result = "Cible déjà touché";
             }
             # La cellule visée est touchée pour la première fois
             else{
               # On récupère le nom du bateau
               $values['boatName'] = $boat['boatName'];
+
               # On enlève un PV
+              $life = $boat['boatLife'];
               $life--;
+
               # On change le statut
               $values['isHitten'] = true;
 
@@ -128,26 +122,25 @@
               if($life == 0){
                 $values['boatLife'] = 0;
                 $values['isSunk'] = true;
-                $message['hitten'] = 'Touché et coulé !';
-                $result = "cible coulé"  .  $gameLife;
+                $values['boatCoordinates'] = $boat['coord'];
+                $result = "Cible coulé";
+                
+                # Dernière étape, vérifier si tous les bateaux sont coulés :
+                if($gameLife == 1){
+                  $result = "gagné!";
+                }
+
+              # Si le bateau n'est pas coulé, il est touché, et on break la boucle 
               }else{
                 $values['boatLife'] = $life;
-
-                # Dernière étape, vérifier si tous les bateaux sont coulés :
-                if($gameLife == 0){
-                  $result = "gagné!";
-                }else{
-                  $message['isSunk'] = 'Touché  !';
-                  $result = "cible touché"  .  $gameLife;
-                }
+                $result = "Cible touché";
               }
             }
             break;
           }
         # Aucun bateau n'a été trouvé   
         $values['isHitten'] = true;
-        $message['hasBoat'] = 'Il n\'y a rien ici.';
-        $result = "cible raté";
+        $result = "Raté";
         }
         
 
@@ -167,20 +160,45 @@
          * Requête de modification de la cellule visée
          */
         $sqlC = "
-        UPDATE cell
-        SET
-            isHitten = ?, 
-            isSunk = ?
-        WHERE game_xid = ? AND coord = ?
-        ";
-  
-        $missileCell = $pdo->prepare($sqlC);
-        $missileCell->execute([
-          $isHitten,
-          $isSunk,
-            $user_id,
-            $coord
-        ]);
+          UPDATE cell
+          SET
+              isHitten = ?, 
+              isSunk = ?
+          WHERE game_xid = ? AND coord = ?
+          ";
+      
+        if($values['isSunk']){
+          # 1 - Coulé - exécuté sur toutes les cellules du bateau
+          // Mettre à jour toutes les cellules du bateau
+          # Convertir la string en array
+          $boatCoordinates = explode(",", $values['boatCoordinates']);
+
+          foreach($boatCoordinates as $coordi){
+            // Reconvertir $coordi en string
+            $coord = strval($coordi);
+
+            /** Exécution */
+            $missileCell = $pdo->prepare($sqlC);
+            $missileCell->execute([
+              $isHitten,
+              $isSunk,
+                $user_id,
+                $coord
+            ]);
+          }
+        }
+        else{
+          # 2- Pas coulé - exécuté une seule fois
+          $missileCell = $pdo->prepare($sqlC);
+          $missileCell->execute([
+            $isHitten,
+            $isSunk,
+              $user_id,
+              $coord
+          ]);
+        }
+
+      
 
         /**
          * Requête de modification des bateaux
@@ -254,11 +272,4 @@
       <span class="error"><?= $errors['coord-command'] ?></span>
     <?php endif ?>
   </form>
-  <div id="logs">
-    <?php if (isset($messages)) : ?>
-      <?php foreach($messages as $message):?>
-        <span><?=$message?></span>
-      <?php endforeach ?>
-    <?php endif ?>
-  </div>
 </div>

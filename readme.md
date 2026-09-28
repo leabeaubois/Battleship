@@ -33,10 +33,21 @@ Je me concentre d'abord sur cette partie, pas sur l’algorithme du jeu.
 ### étape 4
 - [x] Construction du tableau des cellules (~~version brouillon~~)
 - [x] Relancer une partie
-- [ ] Placement des bateaux
+- [x] Placement des bateaux
 
 ### étape 5
-- [ ] La création d'un compte utilisateur doit génèrer automatiquement la création d'une partie (game) et d'un plateau (board)
+- [x] La création d'un compte utilisateur doit génèrer automatiquement la création d'une partie (game) et d'un plateau (board)
+- [x] Installation de la logique du jeu jusqu'à la victoire (mini algorithme)
+- [x] Affichage et évolution de la vie des bateaux
+- [ ] Correction du bug de chevauchement des bateaux
+- [ ] Optimisation des tables ``cell`` et ``boat``
+- [ ] Rendu d'affichage de ``strike_history``
+
+### étape 6
+- [ ] Cacher les bateaux
+- [ ] Mise en route des scores
+- [ ] Un peu de stylisation dynamique
+- [ ] Historique des tirs affiche seulement les 10 derniers tirs
 - [ ] Répartitions des blocs en class
 
 ---
