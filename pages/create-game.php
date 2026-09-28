@@ -6,7 +6,7 @@
 $game_id = filter_var($_SESSION['user']['id'], FILTER_VALIDATE_INT);
 // Pas de validation $_POST car tout est crée côté serveur
 // Pas besoin de remplir l'id: il sera auto-généré en BDD
-//game-xid sera récupérer avec le user id depuis la session
+// game-xid sera récupérer avec le user id depuis la session
 // isSunk et isHitten seront initialisés à ´´false´´
 $CELLS = [];
 $cell = [
@@ -20,6 +20,18 @@ $cell = [
   'boatLife' => 0,
 ];
 
+# En route vers l'optimisation
+$BOATS = [];
+$boat = [
+  'id' => null,
+  // 'boatName' => '',
+  'boatSize' => 0,
+  'boatLife' => 0,
+  'isSunk' => false,
+  'coord' => '',
+  'game_xid' => $game_id,
+
+];
 
 /* -------------------------------------------------------------------------- */
 /*                     Remplissage du tableau des cellules                    */
@@ -40,17 +52,17 @@ $cell = [
   }
 
   # Etape 2 : Placer les bateaux
-  $FLOT = [
+  $FLOTTILA = [
     ["Carrier", 5],
     ["Battleship", 4],
     ["Destroyer", 3],
     ["Submarine", 3],
     ["Patrol Boat", 2],
   ];
-
-  foreach($FLOT as $boat){
-    $boatName = $boat[0];
-    $boatSize = $boat[1];
+  $b = 0;
+  foreach($FLOTTILA as $flot){
+    $boatName = $flot[0];
+    $boatSize = $flot[1];
     $validePos = false; // Vérification de la position (hors plateau ou sur un bateau)
     $orientation = '';  // Vertical ou horizontal
     $coordinates = [];
@@ -117,14 +129,21 @@ $cell = [
         # 6.3 - Appliquer ['boatLife'] : $boatSize
         $CELLS[$coordinates[$u]]['boatLife'] = $boatSize;
       }
+      # 6 - BIS 
+      $boat['boatName'] = $boatName;
+      $boat['boatLife'] = $boatSize;
+      $boat['boatSize'] = $boatSize;
+      $boat['coord'] = strval(implode(',', $coordinates)); 
     }
+    $BOATS[$b] = $boat;
+    $b++;
   }     /* end of foreach $FLOT */
+
 
 /* -------------------------------------------------------------------------- */
 /*                          Requête SQL d'insertion                           */
 /* -------------------------------------------------------------------------- */
 // ! - Attention, cell_id va s'incrémenter à l'infini
-
 // On vérifie qu'il n'y pas d'autres cellules qui ont le game_xid
 // Si c'est le cas, on les supprime
 $verify = "
@@ -134,10 +153,26 @@ $verify = "
 $clean = $pdo->prepare($verify);
 $clean->execute([$game_id]);
 
+$verify = "
+          UPDATE `game`
+          SET strike_history = '[]'
+          WHERE game_id = ?;
+          ";
+$clean = $pdo->prepare($verify);
+$clean->execute([$game_id]);
+
+
+
+$verify = "DELETE FROM `boat`
+          WHERE game_xid = ?;
+          ";
+$clean = $pdo->prepare($verify);
+$clean->execute([$game_id]);
+
 /* -------------------------------------------------------------------------- */
 /*                          Préparation de la requête                         */
 /* -------------------------------------------------------------------------- */
-$sql = "INSERT INTO cell 
+$sqlCell = "INSERT INTO cell 
                   (cell_id, 
                   game_xid, 
                   coord, 
@@ -148,7 +183,15 @@ $sql = "INSERT INTO cell
                   boatLife)
           VALUES (?,?,?,?,?,?,?,?)
             ";
-$statement = $pdo->prepare($sql);
+$statementCell = $pdo->prepare($sqlCell);
+
+
+# Optimisation : remplacer la table cell par la table boat, ne stocker que les coordonnées concernées par des bâteaux
+$sqlBoat = "INSERT INTO boat (boat_id, boatName, boatLife, boatSize, isSunk, coord, game_xid)
+        VALUES (?,?,?,?,?,?,?)";
+$statementBoat = $pdo->prepare($sqlBoat);
+
+
 
 /* -------------------------------------------------------------------------- */
 /*                 Execution de la requête pour chaque cellule                */
@@ -162,7 +205,7 @@ try{
     $isSunk   = filter_var($cell['isSunk'], FILTER_VALIDATE_BOOLEAN) ? 1 : 0;
     $hasBoat  = filter_var($cell['hasBoat'], FILTER_VALIDATE_BOOLEAN) ? 1 : 0;
 
-    $statement->execute([
+    $statementCell->execute([
         $cell['id'],
         $game_xid,
         $coord,
@@ -173,12 +216,32 @@ try{
         $cell['boatLife'] !== '' ? $cell['boatLife'] :  0,
     ]);
   }
+
+  foreach($BOATS as $boat){
+    print_r($boat);   
+
+    $boatName = strval($boat['boatName']);
+    $boatSize = intval($boat['boatSize']);
+    $boatLife = intval($boat['boatLife']);
+    $isSunk   = filter_var($boat['isSunk'], FILTER_VALIDATE_BOOLEAN) ? 1 : 0;
+    $boatCoord =    strval($boat['coord']);
+    $game_xid = intval($boat['game_xid']);
+
+    $statementBoat->execute([
+      $boat['id'], 
+      $boatName,
+      $boatSize,
+      $boatLife,
+      $isSunk,
+      $boatCoord,
+      $game_xid,
+    ]);
+  }
   
   $pdo->commit();
   header('Location: index.php?page=gaming');
   }catch (PDOException $e) {
     $pdo->rollBack();
     throw $e;
-    $errors["global"] = "Erreur lors de la création du plateau.";
   }
 ?>

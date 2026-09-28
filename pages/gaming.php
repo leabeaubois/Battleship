@@ -10,7 +10,7 @@
    * Récupérer les valeurs la table ``cell`` pour construire le plateau
    * */
   // ! Attention : filtrer pour afficher le game correspondant au user 
-  //  La requête devient une insertion qu'il faut préparer */
+  //  Requête du jeu
   $request = "SELECT 
               game_xid,
               cell_id AS id, 
@@ -23,6 +23,8 @@
   $searchCells->execute([$user_id]);
   $cells = $searchCells->fetchAll();
 
+
+  // Requête de l'historique
   $request = "SELECT strike_history
             FROM game
             WHERE game_id = ?";
@@ -31,7 +33,14 @@
   $strikeHistory = $searchHistory->fetch();
 
 
-
+  // Requête des bateaux
+  $request = "SELECT boatName, boatSize, boatLife, isSunk, coord
+              FROM boat
+              WHERE game_xid = ?
+              ";
+  $searchBoats = $pdo->prepare($request);
+  $searchBoats->execute([$user_id]);
+  $boats = $searchBoats->fetchAll();
 ?>
 
 <?php
@@ -121,7 +130,6 @@
   <div id="right">
     <div id="strike-history">
       <!-- Stocker toutes les commandes envoyées dans un tableau et les afficher ici -->
-      
       <?php  
         $strikes = explode(", ", $strikeHistory['strike_history']);?>
       <?php foreach($strikes as $strike): ?>
@@ -130,29 +138,16 @@
     </div>
     <div id="boat-stats">
       <!-- Requête pour afficher une liste des bateau et leur niveau de vie -->
-      <?php
-      $BOATS = [];
-      $hits = 0;
-      $boat = '';
-      $life = 0;
-      foreach ($cells as $cell) {
-        # 1 - Si la cellule a un bateau et que le bateau n'est pas déjà dans le tableau $BOATS
-        if($cell['hasBoat'] && !array_key_exists($cell['boatName'], $BOATS)){
-          # 2 - Je l'ajoute au tableau avec sa vie
-          $BOATS['name'] = $cell['boatName'];
-          $BOATS['life'] = $cell['boatLife'];
-        }
-        // # 3 - Si la cellule est le bateau et qu'elle est touchée, on augmente les $hits
-        // if($BOAT[$cell['boatName']] = $cell['boatName'] && $cell['isHitten']){
-        //     $hits++;
-        // }
-      }
-      print_r($BOATS);
-      // echo $life - $hits;
-    
-
+      <?php   foreach($boats as $boat):        ?>  
+        <li><?=  $boat['boatName'] ?> 
+            <?php $life =  $boat['boatLife'];
+              for($l = 0; $l < $life; $l++){
+                echo "♥";
+              }
+            ?>   
+        </li>
       
-      ?>
+      <?php endforeach ?>
     </div>
   </div>
 </main>

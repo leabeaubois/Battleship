@@ -17,6 +17,8 @@
     'isHitten' => false,
     'hasBoat' => false,
     'isSunk' => false,
+    'boatName' => '',
+    'boatLife' => 0,
   ];
 
   /** 
@@ -70,6 +72,7 @@
 /* -------------------------------------------------------------------------- */
   
     if (!$errors) {
+      $pdo->beginTransaction();
       try {
         /** Va chercher la cellule et compare */
         $coord = $values['coord-command'];
@@ -85,33 +88,85 @@
         $targetedCell = $request->fetch();
         $result = "";
 
-      
-        if($targetedCell['hasBoat'] && $targetedCell['isHitten']){
-          $values['isHitten'] = true; // reste true ou juste ne pas modifier ?
-          $message['alreadyHitten'] = 'Bateau déjà touché';
-          $result = "cible déjà touché";
-        }
-        else if($targetedCell['hasBoat']){
-          $values['isHitten'] = true;
-          $values['boatLife']--;
-          $message['alreadyHitten'] = 'Touché !';
-          $result = "cible touché";
 
-        }else{
-          $values['hasBoat'] = false;
-          $values['isHitten'] = true;
-          $message['hasBoat'] = 'Il n\'y a rien ici.';
-          $result = "cible raté";
+
+        /* -------------------------------------------------------------------------- */
+        /*                               Logique du jeu                               */
+        /* -------------------------------------------------------------------------- */
+        // print_r($boats);
+        $coord = $values['coord-command'];
+
+
+        // ! Revoir la logique des vies - vérifier combien de bateaux sont coulés
+        $gameLife = count($boats);
+        for($u=0; $u < count($boats); $u++){
+          if($boats[$u]['isSunk']){
+            $gameLife--;
+          }
         }
+
+        foreach($boats as $boat){
+          # Il y a un bateau 
+          if(str_contains($boat['coord'], $coord) ){
+            $life = $boat['boatLife'];
+
+            # La cellule visée a déjà été touchée
+            if($targetedCell['isHitten']){
+              $message['alreadyHitten'] = 'Bateau déjà touché';
+              $result = "cible déjà touché" .  $gameLife;
+            }
+            # La cellule visée est touchée pour la première fois
+            else{
+              # On récupère le nom du bateau
+              $values['boatName'] = $boat['boatName'];
+              # On enlève un PV
+              $life--;
+              # On change le statut
+              $values['isHitten'] = true;
+
+              # On vérifie si le bateau est coulé
+              if($life == 0){
+                $values['boatLife'] = 0;
+                $values['isSunk'] = true;
+                $message['hitten'] = 'Touché et coulé !';
+                $result = "cible coulé"  .  $gameLife;
+              }else{
+                $values['boatLife'] = $life;
+
+                # Dernière étape, vérifier si tous les bateaux sont coulés :
+                if($gameLife == 0){
+                  $result = "gagné!";
+                }else{
+                  $message['isSunk'] = 'Touché  !';
+                  $result = "cible touché"  .  $gameLife;
+                }
+              }
+            }
+            break;
+          }
+        # Aucun bateau n'a été trouvé   
+        $values['isHitten'] = true;
+        $message['hasBoat'] = 'Il n\'y a rien ici.';
+        $result = "cible raté";
+        }
+        
+
+        
+
+        /* -------------------------------------------------------------------------- */
+        /*                         Stockage du résultat en BDD                        */
+        /* -------------------------------------------------------------------------- */
 
         /** Convertir en boolen */
         $isHitten = filter_var($values['isHitten'], FILTER_VALIDATE_BOOLEAN) ? 1 : 0;
         $isSunk   = filter_var($values['isSunk'], FILTER_VALIDATE_BOOLEAN) ? 1 : 0;
-  
+        $life =      intval($values['boatLife']);
+        $boatName = strval($values['boatName']);
+
         /**
          * Requête de modification de la cellule visée
          */
-        $sql = "
+        $sqlC = "
         UPDATE cell
         SET
             isHitten = ?, 
@@ -119,13 +174,33 @@
         WHERE game_xid = ? AND coord = ?
         ";
   
-        $missile = $pdo->prepare($sql);
-        $missile->execute([
+        $missileCell = $pdo->prepare($sqlC);
+        $missileCell->execute([
           $isHitten,
           $isSunk,
             $user_id,
             $coord
         ]);
+
+        /**
+         * Requête de modification des bateaux
+         */
+
+        $sqlB = "
+                UPDATE boat
+                SET 
+                  boatLife = ?,
+                  isSunk = ?
+                WHERE game_xid = ? AND boatName = ?
+                ";
+        $missileB = $pdo->prepare($sqlB);
+        $missileB->execute([
+          $life,
+          $isSunk,
+          $user_id,
+          $boatName,
+        ]);
+
 
 
         /* ----------------- Rajouter les actions dans l'historique ----------------- */
@@ -136,7 +211,7 @@
          * Documentation json_array_append
          * https://mariadb.com/docs/server/reference/sql-functions/special-functions/json-functions/json_array_append
          */
-        $sql = "
+        $sqlS = "
         UPDATE game
         SET 
             strike_history = JSON_ARRAY_APPEND
@@ -145,12 +220,13 @@
         WHERE game_id = ?
         ";
 
-        $missile = $pdo->prepare($sql);
-        $missile->execute([
+        $missileS = $pdo->prepare($sqlS);
+        $missileS->execute([
           $strikeShot,
           $user_id,
         ]);
-
+      
+        $pdo->commit();
         header('Location: index.php?page=gaming');
       } catch (PDOException $e) {
         $errors["global"] = "Erreur au lancement du missile.";
