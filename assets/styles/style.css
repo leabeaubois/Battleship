@@ -48,6 +48,9 @@ main {
   width: 100%;
   height: 86vh;
 
+  #left.home, #middle.home{
+    background-color: inherit;
+  }
   #left {
     display: flex;
     flex-direction: column;
@@ -87,7 +90,6 @@ main {
     background-color: rgb(61, 105, 89);
 
     #strike-history {
-      width: 100%;
       height: fit-content;
       background-color: rgb(8, 19, 15);
       li{
@@ -96,7 +98,6 @@ main {
     }
 
     #boat-stats {
-      width: 100%;
       height: fit-content;
       background-color: rgb(38, 65, 73);
     }

@@ -56,34 +56,37 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 ?>
 
 <!-- Template -->
+<main>
+  <div id="left" class="home"></div>
+  <div id="middle" class="home">
+    <h1>Se connecter</h1>
 
-<h1>Se connecter</h1>
+    <form method="post">
 
-<form method="post">
+        <?php if(isset($errors['global'])) : ?>
+          <span class="error"><?= $errors['global'] ?></span>
+        <?php endif ?>
 
-    <?php if(isset($errors['global'])) : ?>
-      <span class="error"><?= $errors['global'] ?></span>
-    <?php endif ?>
+      <div>
+        <label for="pseudo">Pseudo :</label>
+        <input type="text" name="pseudo" minlength="5" maxlength="50" id="pseudo" value="<?= $values['pseudo'] ?>">
+        <?php if(isset($errors['pseudo'])) : ?>
+          <span class="error"><?= $errors['pseudo'] ?></span>
+        <?php endif ?>
+      </div>
 
-  <div>
-    <label for="pseudo">Pseudo :</label>
-    <input type="text" name="pseudo" minlength="5" maxlength="50" id="pseudo" value="<?= $values['pseudo'] ?>">
-    <?php if(isset($errors['pseudo'])) : ?>
-      <span class="error"><?= $errors['pseudo'] ?></span>
-    <?php endif ?>
+
+      <div>
+        <label for="password">Mot de passe:</label>
+        <input type="password" name="password" id="password">
+        <?php if(isset($errors['password'])) : ?>
+          <span class="error"><?= $errors['password'] ?></span>
+        <?php endif ?>
+      </div>
+
+      <button>Se connecter</button>
+
+    </form>
+
+    <p>Pas encore inscrit ? <a href="index.php?page=register">Inscris-toi !</a></p>
   </div>
-
-
-  <div>
-    <label for="password">Mot de passe:</label>
-    <input type="password" name="password" id="password">
-    <?php if(isset($errors['password'])) : ?>
-      <span class="error"><?= $errors['password'] ?></span>
-    <?php endif ?>
-  </div>
-
-  <button>Se connecter</button>
-
-</form>
-
-<p>Pas encore inscrit ? <a href="index.php?page=register">Inscris-toi !</a></p>

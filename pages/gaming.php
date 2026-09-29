@@ -148,8 +148,10 @@
       <p>Journal de bord</p>
       <?php  
         $strikes = json_decode($strikeHistory['strike_history']);
+        $lastTenStrikes = array_slice($strikes, -10);
         ?>
-      <?php foreach($strikes as $strike): ?>
+      <p>...</p>  
+      <?php foreach($lastTenStrikes as $strike): ?>
         <li><?= $strike ?></li>
       <?php endforeach?>
     </div>

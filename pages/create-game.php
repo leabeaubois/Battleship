@@ -42,12 +42,11 @@ $boat = [
 
 # Etape 1 : Créer les coordonnées
   $LETTERS = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J'];
-  $i = 0;
+
   foreach($LETTERS as $letter){
     for($n = 0; $n < 10; $n++){
       $cell['coord'] = $letter.$n;
       $CELLS[$letter.$n] = $cell;
-      $i++;
     }
   }
 
@@ -59,20 +58,23 @@ $boat = [
     ["Submarine", 3],
     ["Patrol Boat", 2],
   ];
+
+
   $b = 0;
   foreach($FLOTTILA as $flot){
     $boatName = $flot[0];
     $boatSize = $flot[1];
     $validePos = false; // Vérification de la position (hors plateau ou sur un bateau)
     $orientation = '';  // Vertical ou horizontal
-    $coordinates = [];
+    // $coordinates = [];
 
 
     while (!$validePos) {
       $validePos = true;
+      $coordinates = [];
 
       # 1 - Position verticale ou horizontale
-      if (random_int(1, 10) < 5) {
+      if (random_int(0, 1)) {
         $orientation = 'vertical';
       } else {
         $orientation = 'horizontal';
@@ -103,22 +105,29 @@ $boat = [
             $coordinates[$s] = $LETTERS[$startLetterKey] . $startNum;
             $startLetterKey++;
           }else {
-            break 2;
+            $validePos = false;
+            break;
           }
         }
       }
       # 5.1 - Vérifier que toutes les coordonnées existent sur le plateau
-      foreach($coordinates as $coord){
-        if(array_key_exists($coord, $CELLS)){
-          #5 .2 - Vérifier qu'il n'y a pas déjà de bateau
-          if(!$CELLS[$coord]['hasBoat']){
-            $validePos = true;
+      if($validePos){
+        foreach($coordinates as $coord){
+          if(array_key_exists($coord, $CELLS)){
+            #5.2 - Vérifier qu'il n'y a pas déjà de bateau
+            if($CELLS[$coord]['hasBoat']){
+              $validePos = false;
+              break;
+            }
+          }else{
+            $validePos = false;
+            break;
           }
-        }else{
-          $validePos = false;
         }
       }
     }   /* end of while loop */
+
+
     if($validePos){
       #6 - Parcourir les coordonnées et placer le bateau
       for($u = 0; $u < count($coordinates); $u++){

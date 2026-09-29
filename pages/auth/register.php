@@ -90,47 +90,50 @@
 ?>
 
 <!-- Template -->
+<main>
+  <div id="left" class="home"></div>
+  <div id="middle" class="home">
+    <h1>S'inscrire</h1>
 
-<h1>S'inscrire</h1>
+    <form method="post">
 
-<form method="post">
+      <div>
+        <label for="pseudo">Pseudo : *</label>
+        <input type="text" name="pseudo" id="pseudo" minlength="5" maxlength="50" value="<?= $values['pseudo'] ?>">
+        <?php if(isset($errors['pseudo'])) : ?>
+          <span class="error"><?= $errors['pseudo'] ?></span>
+        <?php endif ?>
+      </div>
 
-  <div>
-    <label for="pseudo">Pseudo : *</label>
-    <input type="text" name="pseudo" id="pseudo" minlength="5" maxlength="50" value="<?= $values['pseudo'] ?>">
-    <?php if(isset($errors['pseudo'])) : ?>
-      <span class="error"><?= $errors['pseudo'] ?></span>
-    <?php endif ?>
+      <div>
+        <label for="email">Email:</label>
+        <input type="email" name="email" id="email" value="<?= $values['email'] ?>">
+        <?php if(isset($errors['email'])) : ?>
+          <span class="error"><?= $errors['email'] ?></span>
+        <?php endif ?>
+      </div>
+
+
+      <div>
+        <label for="password">Mot de passe: *</label>
+        <input type="password" name="password" id="password">
+        <?php if(isset($errors['password'])) : ?>
+          <span class="error"><?= $errors['password'] ?></span>
+        <?php endif ?>
+      </div>
+
+
+      <div>
+        <label for="confirmation">Confirmation:</label>
+        <input type="password" name="confirmation" id="confirmation">
+        <?php if(isset($errors['confirmation'])) : ?>
+          <span class="error"><?= $errors['confirmation'] ?></span>
+        <?php endif ?>
+      </div>
+
+      <button>S'inscrire</button>
+
+    </form>
+
+    <p>Déjà inscrit ? <a href="index.php?page=login">Connecte toi !</a></p>
   </div>
-
-  <div>
-    <label for="email">Email:</label>
-    <input type="email" name="email" id="email" value="<?= $values['email'] ?>">
-    <?php if(isset($errors['email'])) : ?>
-      <span class="error"><?= $errors['email'] ?></span>
-    <?php endif ?>
-  </div>
-
-
-  <div>
-    <label for="password">Mot de passe: *</label>
-    <input type="password" name="password" id="password">
-    <?php if(isset($errors['password'])) : ?>
-      <span class="error"><?= $errors['password'] ?></span>
-    <?php endif ?>
-  </div>
-
-
-  <div>
-    <label for="confirmation">Confirmation:</label>
-    <input type="password" name="confirmation" id="confirmation">
-    <?php if(isset($errors['confirmation'])) : ?>
-      <span class="error"><?= $errors['confirmation'] ?></span>
-    <?php endif ?>
-  </div>
-
-  <button>S'inscrire</button>
-
-</form>
-
-<p>Déjà inscrit ? <a href="index.php?page=login">Connecte toi !</a></p>
