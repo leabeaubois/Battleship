@@ -3,11 +3,15 @@
 /*                  Initialisation du tableaux des cellules                   */
 /* -------------------------------------------------------------------------- */
 
-$game_id = filter_var($_SESSION['user']['id'], FILTER_VALIDATE_INT);
+# Récupérer de l'id du user pour récupérer le plateau correspondant
 // Pas de validation $_POST car tout est crée côté serveur
+$game_id = filter_var($_SESSION['user']['id'], FILTER_VALIDATE_INT);
+
+
+# Initialisation du tableau $CELLS qui sera utilisé pour remplir la table ´´´cell´´
 // Pas besoin de remplir l'id: il sera auto-généré en BDD
-// game-xid sera récupérer avec le user id depuis la session
-// isSunk et isHitten seront initialisés à ´´false´´
+// game-xid est récupéré plus haut
+// isSunk et isHitten sont initialisés à ´´false´´
 $CELLS = [];
 $cell = [
   'id' => null,
@@ -20,7 +24,8 @@ $cell = [
   'boatLife' => 0,
 ];
 
-# En route vers l'optimisation
+//* Optimisation
+// On vise à supprimer la table ``cell´´ et ne stocker que les informations sur les cellules contenant des bâteaux
 $BOATS = [];
 $boat = [
   'id' => null,
@@ -37,124 +42,127 @@ $boat = [
 /*                     Remplissage du tableau des cellules                    */
 /* -------------------------------------------------------------------------- */
 
-/** Dans le futur, il faudra transformer ce script en class */
+//* Dans le futur, ce script sera intégré à la class ``Board`` dans la méthode populateBoard() */
 
 
 # Etape 1 : Créer les coordonnées
-  $LETTERS = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J'];
+$LETTERS = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J'];
 
-  foreach($LETTERS as $letter){
-    for($n = 0; $n < 10; $n++){
-      $cell['coord'] = $letter.$n;
-      $CELLS[$letter.$n] = $cell;
-    }
+foreach($LETTERS as $letter){
+  for($n = 0; $n < 10; $n++){
+    $cell['coord'] = $letter.$n;
+    $CELLS[$letter.$n] = $cell;
   }
+}
 
-  # Etape 2 : Placer les bateaux
-  $FLOTTILA = [
-    ["Carrier", 5],
-    ["Battleship", 4],
-    ["Destroyer", 3],
-    ["Submarine", 3],
-    ["Patrol Boat", 2],
-  ];
-
-
-  $b = 0;
-  foreach($FLOTTILA as $flot){
-    $boatName = $flot[0];
-    $boatSize = $flot[1];
-    $validePos = false; // Vérification de la position (hors plateau ou sur un bateau)
-    $orientation = '';  // Vertical ou horizontal
-    // $coordinates = [];
+# Etape 2 : Placer les bateaux
+$FLOTTILA = [
+  ["Carrier", 5],
+  ["Battleship", 4],
+  ["Destroyer", 3],
+  ["Submarine", 3],
+  ["Patrol Boat", 2],
+];
 
 
-    while (!$validePos) {
-      $validePos = true;
-      $coordinates = [];
-
-      # 1 - Position verticale ou horizontale
-      if (random_int(0, 1)) {
-        $orientation = 'vertical';
-      } else {
-        $orientation = 'horizontal';
-      }
+$b = 0;
+foreach($FLOTTILA as $flot){
+  $boatName = $flot[0];
+  $boatSize = $flot[1];
+  $validePos = false; // Vérification de la position (hors plateau ou sur un bateau)
+  $orientation = '';  // Vertical ou horizontal
+  // $coordinates = [];
 
 
-      # 2 - Choisir une cellule de départ
-      $startPos = array_rand($CELLS, 1);
+  while (!$validePos) {
+    $validePos = true;
+    $coordinates = [];
 
-      # 3 - Décomposer la lettre et le chiffre
-      $startLetter = substr($startPos, 0, 1);
-      $startNum = intval(substr($startPos, -1, 1));
-
-      # 4 - Ecrire la liste des coordonnées du bateau
-      # 4.1 - En position horizontale
-      if ($orientation == 'horizontal') {
-        for($s = 0; $s < $boatSize; $s++){
-          $coordinates[$s] = $startLetter . $startNum;
-          $startNum++;
-        }
-      }
-      # 4.2 - En position verticale
-      else{
-        $startLetterKey = array_search($startLetter, $LETTERS);
-        for($s = 0; $s < $boatSize; $s++){
-          // Faire évoluer $startLetter en parcourant le tableau $LETTERS
-          if(array_key_exists($startLetterKey, $LETTERS)){
-            $coordinates[$s] = $LETTERS[$startLetterKey] . $startNum;
-            $startLetterKey++;
-          }else {
-            $validePos = false;
-            break;
-          }
-        }
-      }
-      # 5.1 - Vérifier que toutes les coordonnées existent sur le plateau
-      if($validePos){
-        foreach($coordinates as $coord){
-          if(array_key_exists($coord, $CELLS)){
-            #5.2 - Vérifier qu'il n'y a pas déjà de bateau
-            if($CELLS[$coord]['hasBoat']){
-              $validePos = false;
-              break;
-            }
-          }else{
-            $validePos = false;
-            break;
-          }
-        }
-      }
-    }   /* end of while loop */
-
-
-    if($validePos){
-      #6 - Parcourir les coordonnées et placer le bateau
-      for($u = 0; $u < count($coordinates); $u++){
-        #. 6.1 - Appliquer ['hasBoat'] : true 
-        $CELLS[$coordinates[$u]]['hasBoat'] = true;
-        # 6.2 - Appliquer ['boatName'] : $boatName
-        $CELLS[$coordinates[$u]]['boatName'] = $boatName;
-        # 6.3 - Appliquer ['boatLife'] : $boatSize
-        $CELLS[$coordinates[$u]]['boatLife'] = $boatSize;
-      }
-      # 6 - BIS 
-      $boat['boatName'] = $boatName;
-      $boat['boatLife'] = $boatSize;
-      $boat['boatSize'] = $boatSize;
-      $boat['coord'] = strval(implode(',', $coordinates)); 
+    # 1 - Position verticale ou horizontale
+    if (random_int(0, 1)) {
+      $orientation = 'vertical';
+    } else {
+      $orientation = 'horizontal';
     }
-    $BOATS[$b] = $boat;
-    $b++;
-  }     /* end of foreach $FLOT */
+
+
+    # 2 - Choisir une cellule de départ
+    $startPos = array_rand($CELLS, 1);
+
+    # 3 - Décomposer la lettre et le chiffre
+    $startLetter = substr($startPos, 0, 1);
+    $startNum = intval(substr($startPos, -1, 1));
+
+    # 4 - Ecrire la liste des coordonnées du bateau
+    # 4.1 - En position horizontale
+    if ($orientation == 'horizontal') {
+      for($s = 0; $s < $boatSize; $s++){
+        $coordinates[$s] = $startLetter . $startNum;
+        $startNum++;
+      }
+    }
+    # 4.2 - En position verticale
+    else{
+      $startLetterKey = array_search($startLetter, $LETTERS);
+      for($s = 0; $s < $boatSize; $s++){
+        // Faire évoluer $startLetter en parcourant le tableau $LETTERS
+        if(array_key_exists($startLetterKey, $LETTERS)){
+          $coordinates[$s] = $LETTERS[$startLetterKey] . $startNum;
+          $startLetterKey++;
+        }else {
+          $validePos = false;
+          break;
+        }
+      }
+    }
+    # 5.1 - Vérifier que toutes les coordonnées existent sur le plateau
+    if($validePos){
+      foreach($coordinates as $coord){
+        if(array_key_exists($coord, $CELLS)){
+          #5.2 - Vérifier qu'il n'y a pas déjà de bateau
+          if($CELLS[$coord]['hasBoat']){
+            $validePos = false;
+            break;
+          }
+        }else{
+          $validePos = false;
+          break;
+        }
+      }
+    }
+  }   /* end of while loop */
+
+
+  if($validePos){
+    #6 - Parcourir les coordonnées et placer le bateau
+    for($u = 0; $u < count($coordinates); $u++){
+      #. 6.1 - Appliquer ['hasBoat'] : true 
+      $CELLS[$coordinates[$u]]['hasBoat'] = true;
+      # 6.2 - Appliquer ['boatName'] : $boatName
+      $CELLS[$coordinates[$u]]['boatName'] = $boatName;
+      # 6.3 - Appliquer ['boatLife'] : $boatSize
+      $CELLS[$coordinates[$u]]['boatLife'] = $boatSize;
+    }
+    # 6 - BIS 
+    $boat['boatName'] = $boatName;
+    $boat['boatLife'] = $boatSize;
+    $boat['boatSize'] = $boatSize;
+    $boat['coord'] = strval(implode(',', $coordinates)); 
+  }
+  $BOATS[$b] = $boat;
+  $b++;
+}     /* end of foreach $FLOT */
 
 
 /* -------------------------------------------------------------------------- */
 /*                          Requête SQL d'insertion                           */
 /* -------------------------------------------------------------------------- */
 // ! - Attention, cell_id va s'incrémenter à l'infini
-// On vérifie qu'il n'y pas d'autres cellules qui ont le game_xid
+
+
+# 1 - On vérifie qu'il n'y pas d'autres cellules qui ont le game_xid
 // Si c'est le cas, on les supprime
+// Idem pour l'historique et pour les bateaux
 $verify = "
           DELETE FROM  `cell` 
           WHERE game_xid = ?;
@@ -169,7 +177,6 @@ $verify = "
           ";
 $clean = $pdo->prepare($verify);
 $clean->execute([$game_id]);
-
 
 
 $verify = "DELETE FROM `boat`

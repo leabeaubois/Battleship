@@ -48,7 +48,9 @@ main {
   width: 100%;
   height: 86vh;
 
-  #left.home, #middle.home{
+  #left.home, #middle.home,
+  #left.history, #middle.history{
+    padding-top: 1rem;
     background-color: inherit;
   }
   #left {
@@ -100,6 +102,10 @@ main {
     #boat-stats {
       height: fit-content;
       background-color: rgb(38, 65, 73);
+
+      .life-sunk{
+        color: var(--accent);
+      }
     }
   }
 
@@ -150,12 +156,12 @@ table {
   }
 
   /* State : sea or boat */
-  td.boat::before {
+  /* td.boat::before {
     color: var(--boat);
     content: '◉';
     display: block;
     text-align: center;
-  }
+  } */
 
   td.sea::before {
     color: var(--main);
@@ -178,7 +184,7 @@ table {
     display: block;
     text-align: center;
   }
-  td.boatsunk.hitten::before {
+  td.sunk.hitten::before {
     content: 'x';
     color: var(--accent);
     display: block;
@@ -225,4 +231,41 @@ nav {
       }
     }
   }
+}
+
+/* -------------------------------------------------------------------------- */
+/*                            Historique des scores                           */
+/* -------------------------------------------------------------------------- */
+
+ul.history-user{
+  li{
+    border-bottom: 1px solid var(--blue-see);
+    padding:  1rem 0 ;
+    ul, li {
+      list-style: none;
+      border-bottom: none;
+      padding: 0;
+    }
+  }
+}
+
+
+
+
+/* -------------------------------------------------------------------------- */
+/*                          Installation des bâteaux                          */
+/* -------------------------------------------------------------------------- */
+
+
+.radio-input{
+  padding: 0 !important;
+}
+
+label:has(input[type=radio]) {
+  background-color: var(--accent);
+}
+
+input[type=radio]{
+  background-color: var(--accent);
+  color: aqua;
 }

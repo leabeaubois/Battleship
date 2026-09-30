@@ -10,6 +10,11 @@ Avec un espace de connexion par joueur
  
 Je me concentre d'abord sur cette partie, pas sur l’algorithme du jeu.
 
+**Mise à jour 30-09-2026**
+Algorithme du jeu en place. Prochaine étape, évoluer vers : 
+- une partie de deux users connectés jouant l'un contre l'autre.
+- une partie contre l'ordinateur avec plusieurs stratégies (Chasse/Cible, Chasse avec le concept de parité mathématique)
+
 ---
 
 ## Les étapes

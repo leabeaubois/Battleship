@@ -15,16 +15,20 @@
 
 
 <main>
-  <!-- Requête des tous les user (pseudo) et afficher tous leurs meilleurs scores -->
-  <ul>
-    <?php foreach($users as $user):?>
-      <li>
-        <ul>RANG : <?= $rang ?>
-          <li><?= $user['pseudo']?></li>
-          <li><?= $user['maxScore']?></li>
-        </ul>
-        <?php $rang++; ?>
-      </li>
-    <?php endforeach ?>
-  </ul>
+  <div id="left" class="history"></div>
+  <div id="middle" class="history">
+    <h1>Meilleurs scores</h1>
+    <!-- Requête des tous les user (pseudo) et afficher tous leurs meilleurs scores -->
+    <ul class="history-user">
+      <?php foreach($users as $user):?>
+        <li>
+          <ul>RANG : <?= $rang ?>
+            <li><?= $user['pseudo']?></li>
+            <li>Score : <?= $user['maxScore']?></li>
+          </ul>
+          <?php $rang++; ?>
+        </li>
+      <?php endforeach ?>
+    </ul>
+  </div>
 </main>

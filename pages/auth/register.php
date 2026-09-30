@@ -76,7 +76,7 @@
         $statement = $pdo->prepare($sql);
         $statement->execute([$lastCreatedId, $lastCreatedId]);        
 
-        header("Location: index.php?page=gaming");
+        header("Location: index.php?page=create-game");
         exit();
 
       } catch (PDOException $e) {

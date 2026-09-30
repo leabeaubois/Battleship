@@ -8,5 +8,7 @@
       <h2>Camarade <?= $_SESSION['user']['pseudo'] ?></h2>
       <p>Le radar n'arrête pas de sonner ! <a href="index.php?page=gaming">Rejoins vite la partie</a> !</p>
     <?php endif ?>
+
+    <?php require_once 'place-boats.php' ?>
   </div>
 </main>

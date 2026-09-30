@@ -80,23 +80,26 @@
             $typeCell = "sea";
             $isHittenCell = "";
             $boatCell = $cell['boatName'] ? $cell['boatName'] : "";
-            
-            if($cell['hasBoat']){
-              $typeCell = "boat";
+            $boatNameCell = '';
 
+            if($cell['hasBoat']){
+              //$typeCell = "boat";
+              if($cell['isHitten']){
+                $typeCell = "boat";
+                $isHittenCell = "hitten";
+              }
               if($cell['isSunk']){
-                $typeCell .= "sunk";
+                $typeCell = "sunk";
+                $boatNameCell = $boatCell;
               }
             }
-            
-            
             
 
             if($cell['isHitten']){
               $isHittenCell = "hitten";
             }
           
-          $tableRow .= "<td class='". $typeCell . " " . $isHittenCell . " " . $boatCell . "'></td>";
+          $tableRow .= "<td class='". $typeCell . " " . $isHittenCell . " " . $boatNameCell . "'></td>";
           $u++;
 
           if($u % 10 == 0){
@@ -160,9 +163,14 @@
       <p>Cibles</p>
       <?php   foreach($boats as $boat):        ?>  
         <li><?=  $boat['boatName'] ?> 
-            <?php $life =  $boat['boatLife'];
-              for($l = 0; $l < $life; $l++){
-                echo "♥";
+            <?php 
+              $life =  $boat['boatLife'];
+              if($life > 0){
+                for($l = 0; $l < $life; $l++){
+                  echo "♥";
+                }
+              }else{
+                echo "<span class='life-sunk'>☠</span>";
               }
             ?>   
         </li>
