@@ -10,8 +10,8 @@ Avec un espace de connexion par joueur
  
 Je me concentre d'abord sur cette partie, pas sur l’algorithme du jeu.
 
-**Mise à jour 30-09-2026**
-Algorithme du jeu en place. Prochaine étape, évoluer vers : 
+**Mise à jour 30-09-2026**  
+Algorithme du jeu en place. Prochaine étape, évoluer vers :   
 - une partie de deux users connectés jouant l'un contre l'autre.
 - une partie contre l'ordinateur avec plusieurs stratégies (Chasse/Cible, Chasse avec le concept de parité mathématique)
 
@@ -56,7 +56,7 @@ Algorithme du jeu en place. Prochaine étape, évoluer vers :
 - [ ] Répartitions des blocs en class
 
 ### Ėtape 7
-- [ ] 
+- [ ] Autoriser l'entrée de lettres en minuscule
 
 ### Ėtape 8
 - [ ] Deux plateaux de jeu : ``user`` et ``computer``
@@ -81,15 +81,15 @@ La remplacer complètement par la table ``boat``, dans ce cas, conserver les inf
 
 * **Format deux plateaux (étape 8):**
 ```
-┌────────────────┐
-│────────────────│
-│   │ ┌───┐ │    │
-│   │ │   │ │    │
-│   │ └───┘ │────│
-│   │ ┌───┐ │    │
-│   │ │   │ │    │
-│   │ └───┘ │    │
-└────────────────┘
+┌────────────────┐  
+│────────────────│  
+│   │ ┌───┐ │    │  
+│   │ │   │ │    │  
+│   │ └───┘ │────│  
+│   │ ┌───┐ │    │  
+│   │ │   │ │    │  
+│   │ └───┘ │    │  
+└────────────────┘  
 ```
 ---
 
