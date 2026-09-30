@@ -75,7 +75,7 @@ La remplacer complètement par la table ``boat``, dans ce cas, conserver les inf
 
 
 * **Format deux plateaux (étape 8):**
-
+```
 ┌────────────────┐
 │────────────────│
 │   │ ┌───┐ │    │
@@ -85,7 +85,7 @@ La remplacer complètement par la table ``boat``, dans ce cas, conserver les inf
 │   │ │   │ │    │
 │   │ └───┘ │    │
 └────────────────┘
-
+```
 ---
 
 ## Pour aller plus loin :
